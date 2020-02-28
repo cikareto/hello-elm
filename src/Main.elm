@@ -17,11 +17,10 @@ main =
 
 -- MODEL
 
-
 type alias Model =
   { 
     inputData : String,
-    content: String
+    comments: List String
   }
 
 
@@ -29,7 +28,7 @@ init : Model
 init =
   { 
     inputData = "",
-    content = ""
+    comments = []
   }
 
 
@@ -39,7 +38,7 @@ init =
 
 type Msg
   = Change String
-  | Update String
+  | Update
   | Reset
 
 
@@ -49,20 +48,25 @@ update msg model =
     Change newInput ->
       { model | inputData = newInput }
 
-    Update newContent ->
-      { model | content = newContent }
+    Update ->
+      { model | comments = model.comments ++ [model.inputData] }
 
     Reset ->
-      { model | content = "" }
+      { model | comments = [] }
 
 
 -- VIEW
+
+rowItem: String -> Html Msg
+rowItem comment =
+    div []
+        [ text ("- " ++ comment) ]
 
 view : Model -> Html Msg
 view model =
   div []
     [ input [ placeholder "Place text here", value model.inputData, onInput Change ] []
-    , button [ onClick (Update model.inputData) ] [ text "OK" ]
+    , button [ onClick Update ] [ text "OK" ]
     , button [ onClick Reset ] [ text "RESET" ]
-    , div [] [ text model.content ]
+    , div [] (List.map rowItem model.comments)
     ]
